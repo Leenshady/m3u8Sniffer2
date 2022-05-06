@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>m3u8Sniffer</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/popup.js"></script>
+    <style>
+        .btn:focus{
+            box-shadow:none!important;   
+        }
+    </style>
+</head>
+<body style="width:300px;min-height:150px;" class="container">
+    <div class="col-12 mt-1">
+        <h5>m3u8Sniffer</h5>
+    </div>
+    <div class="row card mb-2 ms-0 me-0">
+        <div class="col-12 card-body">
+            <div id="box" class="box card-text" style="min-height:110px;">
+                <!-- <div class="mt-1 mb-1"><span style="max-width: 200px;">index.m3u8</span><a href="#" style="float: right;">复制</a></div> -->
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-success fade hide" style="padding:5px 20px 5px 20px;line-height:14px;font-size: 14px;" hidden>
+        复制成功!
+    </div>
+    <div class="alert alert-danger fade hide" style="padding:5px 20px 5px 20px;line-height:14px;font-size: 14px;" hidden>
+        请重新打开扩展或<button type="button" class="btn btn-link btn-sm" id="reload">刷新网页</button>！
+    </div>
+</body>
+</html>
