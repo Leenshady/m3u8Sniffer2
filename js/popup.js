@@ -1,40 +1,35 @@
 var m3u8list = [];
-const bgPort = chrome.runtime.connect();
+chrome.storage.session.setAccessLevel({accessLevel:'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
+var language = (navigator.language || navigator.userLanguage).toLowerCase();
+var i18n_text={}
 
 $(function(){
-    render(m3u8list)
-    //监听content-script的消息
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if(request.from == 'content_script' && request.reload == 'done'){
-            //刷新成功以后重新获取链接
-            bgPort.postMessage({action:'getList'});
-        }
-        return true;
-    });
-    bgPort.onMessage.addListener(function(receivedPortMsg) {//监听background
-        //console.log("popup:我收到消息了！");//这是background发来的内容
-		//console.log(receivedPortMsg);//这是background发来的内容
-        if(receivedPortMsg.action = 'm3u8List'){
-            if(receivedPortMsg.data){
-                m3u8list = receivedPortMsg.data
-                render(m3u8list)
-            }
-        }
-	});
-    bgPort.postMessage({action:'getList'});//向background发送消息
+    //i18n
+    if(language=="zh-cn"){
+        i18n_text.ext_name="m3u8嗅探器2"
+        i18n_text.copy_msg="复制成功！"
+        i18n_text.copy_btn="复制"
+    }else{
+        i18n_text.ext_name="m3u8Sniffer2"
+        i18n_text.copy_msg="Copy Success!"
+        i18n_text.copy_btn="Copy"
+    }
+    $("#ext-name").text(i18n_text.ext_name)
+    $("#msg").text(i18n_text.copy_msg)
+    chrome.storage.session.onChanged.addListener(()=>{
+        getData()
+    })
+    getData()
 })
 
-$(document).ready(function() {
-    //点击事件必须这么写，否则会报CSP错误
-    document.getElementById("reload").addEventListener("click",reload);
-  });
-
-//刷新页面
-function reload(){
-    //console.log('function : reload');
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {action: "reload"});
-      });
+//获取session内的存储数据
+function getData(){
+    chrome.storage.session.get('data').then((value)=>{
+        value['data'].forEach(element => {
+            m3u8list.push(element)
+        });
+        render(m3u8list)
+    })
 }
 
 //渲染
@@ -46,9 +41,8 @@ function render(list){
         }else{
             $("#box").html()
             for (i = 0; i < list.length; i++) {
-                $("#box").append('<div id="url' + i + '" style="mt-1 mb-1"><span style="max-width: 200px;white-space: nowrap;display: inline-block;overflow: hidden;text-overflow: ellipsis;line-height: 1.5;">' + (list[i].indexOf("?")!=-1?list[i].slice(0,list[i].indexOf("?")).slice(list[i].lastIndexOf("/")+1,list[i].length):list[i].slice(list[i].lastIndexOf("/")+1,list[i].length)) + '</span><a href="#" style="float: right;">复制</a></div>');
+                $("#box").append('<div id="url' + i + '" style="mt-1 mb-1"><span style="max-width: 200px;white-space: nowrap;display: inline-block;overflow: hidden;text-overflow: ellipsis;line-height: 1.5;">' + (list[i].indexOf("?")!=-1?list[i].slice(0,list[i].indexOf("?")).slice(list[i].lastIndexOf("/")+1,list[i].length):list[i].slice(list[i].lastIndexOf("/")+1,list[i].length)) + '</span><a href="#" style="float: right;">'+i18n_text.copy_btn+'</a></div>');
                 $("#url" + i).click({ "url": list[i] }, copyUrl);
-                //console.log("获取到m3u8链接了")
             }
             $(".alert-danger").removeClass("show")
             $(".alert-danger").attr("hidden","hidden")

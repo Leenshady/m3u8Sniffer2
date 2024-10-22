@@ -15,7 +15,8 @@
     "permissions":[
         "tabs",
         "webRequest",
-        "activeTab"
+        "activeTab",
+        "storage"
     ],
     "host_permissions": [
         "*://*/*"
